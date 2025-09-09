@@ -7,9 +7,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/hooks/useAuth';
-import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
-import FormGroup from '@/components/ui/FormGroup';
 
 const loginSchema = z.object({
   username: z.string().min(1, 'Tên đăng nhập là bắt buộc'),
@@ -23,6 +20,7 @@ const LoginPage: React.FC = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -35,7 +33,7 @@ const LoginPage: React.FC = () => {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     setError('');
-    
+
     try {
       await login(data);
       router.push('/dashboard');
@@ -48,113 +46,273 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center items-center">
-          <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center mr-3">
-            <span className="text-white font-bold text-lg">🚀</span>
+      <div className="login-container">
+        <div className="login-form">
+          <div className="login-header">
+            <h1>
+              <span className="rocket-icon">🚀</span>
+              Đăng nhập hệ thống thi
+            </h1>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">
-            Đăng nhập hệ thống thi
-          </h2>
-        </div>
-      </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="py-8 px-4 sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <FormGroup>
-              <Input
-                label="Tài khoản"
-                {...register('username')}
-                error={errors.username?.message}
-                placeholder="Nhập tài khoản"
+          <form className="form" onSubmit={handleSubmit(onSubmit)}>
+            <div className="input-group">
+              <label htmlFor="username">Tài khoản</label>
+              <input
+                  type="text"
+                  id="username"
+                  {...register('username')}
+                  className={errors.username ? 'error' : ''}
               />
+              {errors.username && (
+                  <span className="error-message">{errors.username.message}</span>
+              )}
+            </div>
 
-              <Input
-                label="Mật khẩu"
-                type="password"
-                showPasswordToggle={true}
-                {...register('password')}
-                error={errors.password?.message}
-                placeholder="Nhập mật khẩu"
-              />
-            </FormGroup>
+            <div className="input-group">
+              <label htmlFor="password">Mật khẩu</label>
+              <div className="password-container">
+                <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    {...register('password')}
+                    className={errors.password ? 'error' : ''}
+                />
+                <button
+                    type="button"
+                    className="toggle-password"
+                    onClick={() => setShowPassword(!showPassword)}
+                >
+                <span className="eye-icon">
+                  {showPassword ? '🙈' : '👁️'}
+                </span>
+                </button>
+              </div>
+              {errors.password && (
+                  <span className="error-message">{errors.password.message}</span>
+              )}
+            </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                <p className="text-sm text-red-600">{error}</p>
-              </div>
+                <div className="error-banner">
+                  {error}
+                </div>
             )}
 
-            <div>
-              <Button
+            <button
                 type="submit"
-                className="w-full"
-                loading={isLoading}
+                className="login-btn"
                 disabled={isLoading}
-              >
-                Đăng nhập
-              </Button>
-            </div>
-
-            <div className="text-center text-sm text-gray-500">
-              <p>
-                Nếu bạn chưa có tài khoản, vui lòng{' '}
-                <Link href="/register" className="text-blue-600 hover:text-blue-500">
-                  đăng ký tại đây
-                </Link>
-                ,
-              </p>
-              <p>
-                hoặc{' '}
-                <Link href="/" className="text-blue-600 hover:text-blue-500">
-                  quay lại trang chủ tại đây
-                </Link>
-                .
-              </p>
-            </div>
+            >
+              {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+            </button>
           </form>
+
+          <div className="login-footer">
+            <p>
+              Nếu bạn chưa có tài khoản, vui lòng{' '}
+              <Link href="/register" className="link">đăng ký tại đây</Link>,
+            </p>
+            <p>
+              hoặc{' '}
+              <Link href="/" className="link">quay lại trang chủ tại đây</Link>.
+            </p>
+          </div>
         </div>
+
+        <style jsx>{`
+        .login-container {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background-color: #f5f5f5;
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0;
+          padding: 20px;
+          box-sizing: border-box;
+        }
+
+        .login-form {
+          background: white;
+          padding: 40px 30px;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          width: 100%;
+          max-width: 400px;
+        }
+
+        .login-header {
+          text-align: center;
+          margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+          color: #1a365d;
+          font-size: 24px;
+          font-weight: 600;
+          margin: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+        }
+
+        .rocket-icon {
+          font-size: 20px;
+          color: #ff6b35;
+        }
+
+        .form {
+          margin-bottom: 20px;
+        }
+
+        .input-group {
+          margin-bottom: 20px;
+        }
+
+        .input-group label {
+          display: block;
+          margin-bottom: 8px;
+          color: #2d3748;
+          font-weight: 500;
+          font-size: 14px;
+        }
+
+        .input-group input {
+          width: 100%;
+          padding: 12px 16px;
+          border: 1px solid #d1d5db;
+          border-radius: 6px;
+          font-size: 16px;
+          transition: border-color 0.3s ease, box-shadow 0.3s ease;
+          background-color: white;
+          box-sizing: border-box;
+        }
+
+        .input-group input:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-group input.error {
+          border-color: #ef4444;
+        }
+
+        .password-container {
+          position: relative;
+        }
+
+        .password-container input {
+          padding-right: 50px;
+        }
+
+        .toggle-password {
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 4px;
+          color: #6b7280;
+          font-size: 16px;
+        }
+
+        .toggle-password:hover {
+          color: #374151;
+        }
+
+        .error-message {
+          color: #ef4444;
+          font-size: 12px;
+          margin-top: 4px;
+          display: block;
+        }
+
+        .error-banner {
+          background-color: #fef2f2;
+          border: 1px solid #fecaca;
+          color: #dc2626;
+          padding: 12px;
+          border-radius: 6px;
+          margin-bottom: 20px;
+          font-size: 14px;
+        }
+
+        .login-btn {
+          width: 100%;
+          padding: 14px;
+          background-color: #3b82f6;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          font-size: 16px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+
+        .login-btn:hover:not(:disabled) {
+          background-color: #2563eb;
+        }
+
+        .login-btn:disabled {
+          background-color: #9ca3af;
+          cursor: not-allowed;
+        }
+
+        .login-footer {
+          text-align: center;
+          color: #6b7280;
+          font-size: 14px;
+          line-height: 1.5;
+        }
+
+        .login-footer p {
+          margin: 5px 0;
+        }
+
+        .link {
+          color: #3b82f6;
+          text-decoration: underline;
+          transition: color 0.3s ease;
+        }
+
+        .link:hover {
+          color: #2563eb;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+          .login-container {
+            padding: 10px;
+          }
+          
+          .login-form {
+            padding: 30px 20px;
+          }
+          
+          .login-header h1 {
+            font-size: 20px;
+          }
+        }
+
+        @media (max-width: 320px) {
+          .login-header h1 {
+            font-size: 18px;
+            flex-direction: column;
+            gap: 5px;
+          }
+          
+          .rocket-icon {
+            font-size: 18px;
+          }
+        }
+      `}</style>
       </div>
-      
-      {/* Footer với icon mặt trời và bánh răng */}
-      <div className="absolute bottom-4 right-4 flex items-center space-x-2 text-gray-400">
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-          />
-        </svg>
-        <span className="text-sm">Ste</span>
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-      </div>
-    </div>
   );
 };
 
