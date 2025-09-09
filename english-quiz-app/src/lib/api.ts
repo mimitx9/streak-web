@@ -34,12 +34,12 @@ api.interceptors.request.use((config) => {
 // Auth API
 export const authApi = {
   login: async (data: LoginRequest): Promise<AuthResponse> => {
-    const response = await api.post<ApiResponse<AuthResponse>>('/auth/login', data);
+    const response = await api.post<ApiResponse<AuthResponse>>('/v1/account/auth', data);
     return response.data.data;
   },
 
   register: async (data: RegisterRequest): Promise<AuthResponse> => {
-    const response = await api.post<ApiResponse<AuthResponse>>('/auth/register', data);
+    const response = await api.post<ApiResponse<AuthResponse>>('/v1/account/register', data);
     return response.data.data;
   },
 
