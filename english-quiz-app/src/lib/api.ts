@@ -14,9 +14,17 @@ import {
 } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const AUTH_API_BASE_URL = 'http://localhost:7071/fai/v1/account';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+const authApi = axios.create({
+  baseURL: AUTH_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -32,14 +40,14 @@ api.interceptors.request.use((config) => {
 });
 
 // Auth API
-export const authApi = {
+export const authApiService = {
   login: async (data: LoginRequest): Promise<AuthResponse> => {
-    const response = await api.post<ApiResponse<AuthResponse>>('/auth/login', data);
+    const response = await authApi.post<ApiResponse<AuthResponse>>('/auth', data);
     return response.data.data;
   },
 
   register: async (data: RegisterRequest): Promise<AuthResponse> => {
-    const response = await api.post<ApiResponse<AuthResponse>>('/auth/register', data);
+    const response = await authApi.post<ApiResponse<AuthResponse>>('/register', data);
     return response.data.data;
   },
 
