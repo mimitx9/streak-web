@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, LoginRequest, RegisterRequest } from '@/types';
-import { authApi } from '@/lib/api';
+import { authApiService } from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const token = localStorage.getItem('auth_token');
       if (token) {
         try {
-          const userData = await authApi.getProfile();
+          const userData = await authApiService.getProfile();
           setUser(userData);
         } catch (error) {
           console.error('Failed to get profile:', error);
@@ -51,7 +51,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (data: LoginRequest) => {
     try {
-      const response = await authApi.login(data);
+      const response = await authApiService.login(data);
       localStorage.setItem('auth_token', response.token);
       setUser(response.user);
     } catch (error) {
@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (data: RegisterRequest) => {
     try {
-      const response = await authApi.register(data);
+      const response = await authApiService.register(data);
       localStorage.setItem('auth_token', response.token);
       setUser(response.user);
     } catch (error) {
@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      await authApi.logout();
+      await authApiService.logout();
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const refreshUser = async () => {
     try {
-      const userData = await authApi.getProfile();
+      const userData = await authApiService.getProfile();
       setUser(userData);
     } catch (error) {
       console.error('Refresh user error:', error);
